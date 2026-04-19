@@ -71,14 +71,14 @@
 
                     <div class="form-group">
                         <label for="days-ahead">Days to Simulate</label>
-                        <input type="number" id="days-ahead" value="252" min="30" max="1000">
-                        <small>252 = 1 year of trading days</small>
+                        <input type="number" id="days-ahead" value="122" min="30" max="252">
+                        <small>122 = 6 months | 252 = 1 year</small>
                     </div>
 
                     <div class="form-group">
                         <label for="num-simulations">Monte Carlo Simulations</label>
-                        <input type="number" id="num-simulations" value="500" min="100" max="2000">
-                        <small>500 = ~15-30 seconds | 1000 = ~30-60 seconds (Max: 2000)</small>
+                        <input type="number" id="num-simulations" value="300" min="100" max="500">
+                        <small>FAST: 300 = ~5-10 sec | 500 = ~10-20 sec (Vectorized)</small>
                     </div>
 
                     <div class="actions">
@@ -110,7 +110,8 @@
                 <!-- Loading Indicator -->
                 <div id="loading" class="loading hidden">
                     <div class="spinner"></div>
-                    <p>Analyzing financial data and running simulations...</p>
+                    <p>⚡ Running VECTORIZED Monte Carlo analysis...</p>
+                    <small style="color: #7f8c8d; margin-top: 10px;">300 sims: ~5-10s | 500 sims: ~10-20s</small>
                 </div>
 
                 <!-- Results Container -->

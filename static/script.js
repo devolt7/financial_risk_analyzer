@@ -193,7 +193,7 @@ async function analyzeRisk() {
         loadingEl.classList.remove('hidden');
         resultsEl.classList.add('hidden');
         emptyStateEl.classList.add('hidden');
-        showStatus('Starting analysis... This may take 15-60 seconds depending on simulations.', 'info', statusEl);
+        showStatus('Starting OPTIMIZED analysis... Should finish in 5-15 seconds!', 'info', statusEl);
         
         const response = await fetch('/api/analyze', {
             method: 'POST',

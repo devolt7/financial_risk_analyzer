@@ -125,14 +125,19 @@ def analyze():
             
         symbols_str = data.get('symbols', '').strip()
         investment_amount = float(data.get('investment_amount', 100000))
-        days_ahead = int(data.get('days_ahead', 252))
-        num_simulations = int(data.get('num_simulations', 500))  # Reduced from 1000 for speed
+        days_ahead = int(data.get('days_ahead', 122))  # Reduced to 6 months for speed
+        num_simulations = int(data.get('num_simulations', 300))  # Reduced to 300 for Vercel 60s limit
         
-        # Cap simulations for performance
-        if num_simulations > 2000:
-            num_simulations = 2000
+        # AGGRESSIVE optimization for Vercel 60-second limit
+        if num_simulations > 500:
+            num_simulations = 500  # Cap at 500 max
         if num_simulations < 100:
             num_simulations = 100
+        
+        if days_ahead > 252:
+            days_ahead = 252  # Cap at 1 year
+        if days_ahead < 30:
+            days_ahead = 30
         
         # Parse and validate symbols
         symbols = [s.strip().upper() for s in symbols_str.split(',') if s.strip()]
@@ -145,7 +150,8 @@ def analyze():
         
         print(f"\n{'='*60}")
         print(f"Starting analysis for: {symbols}")
-        print(f"Simulations: {num_simulations}, Days: {days_ahead}")
+        print(f"OPTIMIZED: {num_simulations} sims, {days_ahead} days")
+        print(f"Expected time: 5-15 seconds")
         print(f"{'='*60}\n")
         
         # Step 1: Validate symbols and fetch data

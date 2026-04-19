@@ -130,8 +130,18 @@ def analyze():
         data = request.get_json()
         symbols_str = data.get('symbols', '').strip()
         investment_amount = float(data.get('investment_amount', 100000))
-        days_ahead = int(data.get('days_ahead', 252))
-        num_simulations = int(data.get('num_simulations', 1000))
+        days_ahead = int(data.get('days_ahead', 122))  # Reduced to 6 months
+        num_simulations = int(data.get('num_simulations', 300))  # Reduced for speed
+        
+        # Optimize for Vercel 60-second timeout
+        if num_simulations > 500:
+            num_simulations = 500
+        if num_simulations < 100:
+            num_simulations = 100
+        if days_ahead > 252:
+            days_ahead = 252
+        if days_ahead < 30:
+            days_ahead = 30
         
         # Parse and validate symbols
         symbols = [s.strip().upper() for s in symbols_str.split(',') if s.strip()]
