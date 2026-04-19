@@ -41,6 +41,8 @@ class PortfolioOptimizer:
                 # Annualize daily returns
                 daily_return = returns_dict[symbol].mean()
                 annual_return = daily_return * 252
+                # Convert to float scalar to avoid Series issues
+                annual_return = float(annual_return) if not (np.isnan(annual_return) or np.isinf(annual_return)) else 0.0
                 returns_data.append(annual_return)
         
         self.expected_returns = np.array(returns_data)
@@ -53,7 +55,13 @@ class PortfolioOptimizer:
         })
         
         # Covariance matrix (annualized)
-        self.covariance_matrix = returns_df.cov() * 252
+        cov_matrix = returns_df.cov() * 252
+        
+        # Replace NaN/Inf values in covariance matrix with 0 to prevent optimization errors
+        cov_matrix = cov_matrix.fillna(0)
+        cov_matrix = cov_matrix.replace([np.inf, -np.inf], 0)
+        
+        self.covariance_matrix = cov_matrix
     
     def optimize_risk_minimization(self):
         """
@@ -230,7 +238,7 @@ class PortfolioOptimizer:
             'portfolio_variance': float(portfolio_variance),
             'portfolio_volatility': float(portfolio_volatility),
             'portfolio_volatility_percentage': float(portfolio_volatility * 100),
-            'sharpe_ratio': float((portfolio_return - 0.02) / portfolio_volatility) if portfolio_volatility > 0 else 0
+            'sharpe_ratio': float((portfolio_return - 0.02) / portfolio_volatility) if float(portfolio_volatility) > 0 else 0.0
         }
         
         return result

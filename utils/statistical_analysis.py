@@ -87,11 +87,14 @@ class StatisticalAnalyzer:
             statistic, p_value = stats.shapiro(returns)
             normal_test_p_value = p_value
         
+        # Convert p_value to scalar if it's a Series
+        p_value_scalar = float(normal_test_p_value) if normal_test_p_value is not None else None
+        
         normal_dist = {
             'mu': mu,
             'sigma': sigma,
-            'normality_test_p_value': normal_test_p_value,
-            'is_normal': normal_test_p_value > 0.05 if normal_test_p_value else True
+            'normality_test_p_value': p_value_scalar,
+            'is_normal': (p_value_scalar > 0.05) if p_value_scalar is not None else True
         }
         
         return normal_dist
@@ -121,13 +124,17 @@ class StatisticalAnalyzer:
         
         # Conditional VaR (CVaR) - average of losses beyond VaR
         losses = returns[returns <= var_historical]
-        cvar = losses.mean() if len(losses) > 0 else var_historical
+        # Convert to scalar safely - check if losses is empty using .empty property
+        if not losses.empty:
+            cvar_value = losses.mean()
+            cvar = float(cvar_value) if not (np.isnan(cvar_value) or np.isinf(cvar_value)) else 0.0
+        else:
+            cvar = float(var_historical)
         
         # Annualized VaR (for daily returns)
         var_annual = var_parametric * np.sqrt(252)
         
         # Handle NaN values
-        cvar = float(cvar) if not (np.isnan(cvar) or np.isinf(cvar)) else 0.0
         var_annual = float(var_annual) if not (np.isnan(var_annual) or np.isinf(var_annual)) else 0.0
         
         var_metrics = {
