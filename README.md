@@ -32,28 +32,181 @@ financial_risk_analyzer/
     └── charts.js                  # Chart rendering
 ```
 
-## 🚀 Quick Start
+## 🚀 Complete Setup Guide
 
-### 1. Install Dependencies
+### **Prerequisites**
+
+Ensure you have Python 3.8+ installed:
+```bash
+python3 --version
+```
+
+---
+
+### **Step 1: Navigate to Project Directory**
 
 ```bash
-cd /path/to/financial_risk_analyzer
+cd ~/Desktop/financial_risk_analyser
+```
+
+Or if starting from scratch:
+```bash
+cd /path/to/financial_risk_analyser
+```
+
+---
+
+### **Step 2: Create Virtual Environment** (Recommended)
+
+**Create venv:**
+```bash
+python3 -m venv venv
+```
+
+**Activate venv:**
+
+```bash
+# On Linux/Mac:
+source venv/bin/activate
+
+# On Windows:
+venv\Scripts\activate
+```
+
+You should see `(venv)` prefix in your terminal.
+
+---
+
+### **Step 3: Install Dependencies**
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Run the Application
+**This installs:**
+- Flask (web framework)
+- pandas (data handling)
+- numpy (numerical computing)
+- scipy (statistics & optimization)
+- yfinance (stock data fetching)
+- scikit-learn (machine learning)
+- plotly (interactive charts)
+
+---
+
+### **Step 4: Run the Application**
 
 ```bash
-python app.py
+python3 app.py
 ```
 
-The server will start at: **http://localhost:5000**
+**Expected Output:**
+```
+============================================================
+Financial Risk Analyzer - Starting Server
+============================================================
+Server running at: http://localhost:5000
+Dashboard: http://localhost:5000/
+============================================================
 
-### 3. Use the Dashboard
+ * Running on http://127.0.0.1:5000
+ * Press CTRL+C to quit
+```
 
-- Enter stock symbols (e.g., `RELIANCE.NS, TCS.NS, INFY.NS`)
-- Click "Analyze Risk"
-- Review statistics, simulations, and optimal portfolios
+---
+
+### **Step 5: Open Dashboard in Browser**
+
+Open any browser and go to:
+```
+http://localhost:5000
+```
+
+Or locally:
+```
+http://127.0.0.1:5000
+```
+
+---
+
+### **Step 6: Use the Dashboard**
+
+1. **Enter Stock Symbols:**
+   - US Stocks: `AAPL, MSFT, GOOGL`
+   - Indian Stocks: `RELIANCE.NS, TCS.NS, INFY.NS`
+   - Or use the dropdown menu to select pre-defined stocks
+
+2. **Configure Parameters:**
+   - **Investment Amount:** Default 100,000 (adjust as needed)
+   - **Days Ahead:** Default 122 days (6 months)
+   - **Number of Simulations:** Default 300
+
+3. **Click "Analyze"** button
+
+4. **View Results:**
+   - Statistical Analysis (mean, std dev, VaR, Sharpe ratio)
+   - Stock distribution histogram
+   - Monte Carlo simulation price corridors
+   - Portfolio optimization strategies (Min Variance, Max Sharpe, Max Return, Equal Weight)
+   - Efficient frontier graph
+
+---
+
+### **Step 7: API Testing** (Optional)
+
+Test the analysis endpoint with curl:
+
+```bash
+curl -X POST http://localhost:5000/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbols": "AAPL,MSFT",
+    "investment_amount": 100000,
+    "days_ahead": 30,
+    "num_simulations": 100
+  }'
+```
+
+Health check:
+```bash
+curl http://localhost:5000/api/health
+```
+
+---
+
+### **Stopping the Server**
+
+Press `CTRL+C` in the terminal to stop the Flask server.
+
+---
+
+### **Deactivate Virtual Environment**
+
+When done, deactivate the virtual environment:
+```bash
+deactivate
+```
+
+---
+
+## 🧪 **Troubleshooting**
+
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError: No module named 'flask'` | Run: `pip install -r requirements.txt` |
+| `Port 5000 already in use` | Kill process: `lsof -ti:5000 \| xargs kill -9` (Mac/Linux) or `netstat -ano \| findstr :5000` (Windows) |
+| `ConnectionError with yfinance` | App auto-switches to sample data; wait 10-15 min and retry |
+| `Cannot find static files` | Ensure you're in project root directory |
+| `Permission denied on venv/bin/activate` | Run: `chmod +x venv/bin/activate` |
+
+---
+
+## 💡 **Quick Tips**
+
+- **First Time?** Use sample stocks (AAPL, MSFT) to test
+- **Network Issues?** The app automatically uses realistic sample data as fallback
+- **Performance?** Reduce number of simulations if analysis takes too long
+- **Customize?** Edit parameters in `app.py` line 125-130
 
 ## 📚 Key Features
 
