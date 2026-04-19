@@ -25,6 +25,20 @@ function initializeEventListeners() {
     document.querySelectorAll('.opt-tab-btn').forEach(btn => {
         btn.addEventListener('click', switchOptimizationTab);
     });
+    
+    // Stock selection tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', switchStockSelectionTab);
+    });
+    
+    // Stock category dropdown
+    document.getElementById('stock-category').addEventListener('change', loadStocksForCategory);
+    
+    // Add from dropdown button
+    document.getElementById('add-from-dropdown').addEventListener('click', addStocksFromDropdown);
+    
+    // Load stocks on page load
+    loadAllStocks();
 }
 
 /**
@@ -62,6 +76,92 @@ async function validateSymbols() {
         showStatus(`Validation error: ${error.message}`, 'error', statusEl);
         console.error('Validation error:', error);
     }
+}
+
+/**
+ * Switch between manual entry and dropdown selection tabs
+ */
+function switchStockSelectionTab(event) {
+    const tabName = event.target.getAttribute('data-tab');
+    
+    // Update active button
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    if (tabName === 'manual') {
+        document.getElementById('manual-tab').classList.add('active');
+    } else if (tabName === 'dropdown') {
+        document.getElementById('dropdown-tab').classList.add('active');
+    }
+}
+
+/**
+ * Load all stocks from API
+ */
+async function loadAllStocks() {
+    try {
+        const response = await fetch('/api/get-stock-list');
+        const stocksData = await response.json();
+        
+        // Store globally for later use
+        window.allStocks = stocksData;
+        console.log('✓ Loaded stock list');
+    } catch (error) {
+        console.error('Error loading stocks:', error);
+    }
+}
+
+/**
+ * Load stocks for selected category
+ */
+function loadStocksForCategory(event) {
+    const category = event.target.value;
+    const stockDropdown = document.getElementById('stock-dropdown');
+    
+    // Clear existing options
+    stockDropdown.innerHTML = '<option value="">Choose stocks...</option>';
+    
+    if (!category || !window.allStocks || !window.allStocks[category]) {
+        return;
+    }
+    
+    // Add stocks for selected category
+    window.allStocks[category].forEach(stock => {
+        const option = document.createElement('option');
+        option.value = stock.symbol;
+        option.textContent = `${stock.symbol} - ${stock.name}`;
+        stockDropdown.appendChild(option);
+    });
+}
+
+/**
+ * Add selected stocks from dropdown to textarea
+ */
+function addStocksFromDropdown() {
+    const stockDropdown = document.getElementById('stock-dropdown');
+    const selectedOptions = Array.from(stockDropdown.selectedOptions);
+    
+    if (selectedOptions.length === 0) {
+        showStatus('Please select at least one stock', 'warning', document.getElementById('status-message'));
+        return;
+    }
+    
+    const selectedSymbols = selectedOptions.map(opt => opt.value);
+    const textarea = document.getElementById('stock-symbols');
+    const existingText = textarea.value.trim();
+    
+    // Add new symbols, avoiding duplicates
+    const existingSymbols = existingText ? existingText.split(',').map(s => s.trim()) : [];
+    const allSymbols = [...new Set([...existingSymbols, ...selectedSymbols])];
+    
+    textarea.value = allSymbols.join(', ');
+    
+    // Clear dropdown selection
+    stockDropdown.value = '';
+    
+    showStatus(`✓ Added ${selectedSymbols.length} stock(s)`, 'success', document.getElementById('status-message'));
 }
 
 /**

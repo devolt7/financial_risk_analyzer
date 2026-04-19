@@ -26,12 +26,42 @@
                     
                     <div class="form-group">
                         <label for="stock-symbols">Stock Symbols</label>
-                        <textarea 
-                            id="stock-symbols" 
-                            placeholder="Enter symbols separated by commas&#10;Example: RELIANCE.NS, TCS.NS, INFY.NS"
-                            rows="4"
-                        ></textarea>
-                        <small>Use format like RELIANCE.NS for Indian stocks, AAPL for US stocks</small>
+                        <div class="stock-selection-tabs">
+                            <button type="button" class="tab-btn active" data-tab="manual">Manual Entry</button>
+                            <button type="button" class="tab-btn" data-tab="dropdown">Quick Select</button>
+                        </div>
+                        
+                        <div id="manual-tab" class="tab-content active">
+                            <textarea 
+                                id="stock-symbols" 
+                                placeholder="Enter symbols separated by commas&#10;Example: RELIANCE.NS, TCS.NS, INFY.NS"
+                                rows="4"
+                            ></textarea>
+                            <small>Use format like RELIANCE.NS for Indian stocks, AAPL for US stocks</small>
+                        </div>
+                        
+                        <div id="dropdown-tab" class="tab-content hidden">
+                            <div class="stock-dropdown-group">
+                                <label for="stock-category">Category:</label>
+                                <select id="stock-category">
+                                    <option value="">Select a category...</option>
+                                    <option value="Indian Stocks">Indian Stocks</option>
+                                    <option value="US Stocks">US Stocks</option>
+                                </select>
+                            </div>
+                            
+                            <div class="stock-dropdown-group">
+                                <label for="stock-dropdown">Select Stock:</label>
+                                <select id="stock-dropdown" multiple>
+                                    <option value="">Choose stocks...</option>
+                                </select>
+                                <small>Hold Ctrl/Cmd to select multiple</small>
+                            </div>
+                            
+                            <button type="button" class="btn btn-small" id="add-from-dropdown">
+                                ➕ Add Selected to Input
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group">

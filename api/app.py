@@ -165,8 +165,17 @@ def analyze():
         
         for symbol in valid_symbols:
             if symbol in returns_data:
-                # Get current price (last closing price)
-                current_prices[symbol] = float(stock_data[symbol]['Close'].iloc[-1])
+                # Get current price (last closing price) - handle both Series and DataFrame
+                try:
+                    price_data = stock_data[symbol]['Close'].iloc[-1]
+                    # If it's a Series, get the scalar value; if scalar, use as-is
+                    if hasattr(price_data, 'item'):
+                        current_prices[symbol] = float(price_data.item())
+                    else:
+                        current_prices[symbol] = float(price_data)
+                except (TypeError, AttributeError):
+                    # Fallback if extraction fails
+                    current_prices[symbol] = float(stock_data[symbol]['Close'].values[-1])
                 
                 # Calculate statistics
                 returns_series = returns_data[symbol]
@@ -286,6 +295,51 @@ def analyze():
         clean_error = convert_to_json_serializable(error_response)
         return _original_jsonify(clean_error), 500
 
+
+@app.route('/api/get-stock-list', methods=['GET'])
+def get_stock_list():
+    """Get list of popular stocks for dropdown menu"""
+    try:
+        # Popular Indian and US stocks
+        stocks = {
+            'Indian Stocks': [
+                {'symbol': 'RELIANCE.NS', 'name': 'Reliance Industries'},
+                {'symbol': 'TCS.NS', 'name': 'Tata Consultancy Services'},
+                {'symbol': 'INFY.NS', 'name': 'Infosys'},
+                {'symbol': 'HDFCBANK.NS', 'name': 'HDFC Bank'},
+                {'symbol': 'SBIN.NS', 'name': 'State Bank of India'},
+                {'symbol': 'WIPRO.NS', 'name': 'Wipro'},
+                {'symbol': 'LT.NS', 'name': 'Larsen & Toubro'},
+                {'symbol': 'MARUTI.NS', 'name': 'Maruti Suzuki'},
+                {'symbol': 'BAJAJ-AUTO.NS', 'name': 'Bajaj Auto'},
+                {'symbol': 'ICICIBANK.NS', 'name': 'ICICI Bank'},
+                {'symbol': 'BHARTIARTL.NS', 'name': 'Bharti Airtel'},
+                {'symbol': 'KOTAKBANK.NS', 'name': 'Kotak Mahindra Bank'},
+                {'symbol': 'ADANIPORTS.NS', 'name': 'Adani Ports'},
+                {'symbol': 'POWERGRID.NS', 'name': 'Power Grid'},
+                {'symbol': 'JSWSTEEL.NS', 'name': 'JSW Steel'},
+            ],
+            'US Stocks': [
+                {'symbol': 'AAPL', 'name': 'Apple Inc.'},
+                {'symbol': 'MSFT', 'name': 'Microsoft Corporation'},
+                {'symbol': 'GOOGL', 'name': 'Alphabet Inc.'},
+                {'symbol': 'AMZN', 'name': 'Amazon.com Inc.'},
+                {'symbol': 'TESLA', 'name': 'Tesla Inc.'},
+                {'symbol': 'META', 'name': 'Meta Platforms'},
+                {'symbol': 'NVDA', 'name': 'NVIDIA Corporation'},
+                {'symbol': 'JPM', 'name': 'JPMorgan Chase'},
+                {'symbol': 'V', 'name': 'Visa Inc.'},
+                {'symbol': 'JNJ', 'name': 'Johnson & Johnson'},
+                {'symbol': 'PG', 'name': 'Procter & Gamble'},
+                {'symbol': 'DIS', 'name': 'The Walt Disney Company'},
+                {'symbol': 'BA', 'name': 'Boeing'},
+                {'symbol': 'INTC', 'name': 'Intel Corporation'},
+                {'symbol': 'AMD', 'name': 'Advanced Micro Devices'},
+            ]
+        }
+        return jsonify(stocks), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/validate-symbols', methods=['POST'])
 def validate_symbols():

@@ -158,7 +158,8 @@ body {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--border-color);
@@ -169,7 +170,8 @@ body {
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--secondary-color);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
@@ -227,6 +229,89 @@ body {
     flex-direction: column;
     gap: 10px;
     margin-top: 20px;
+}
+
+/* Tab Selection Buttons */
+.stock-selection-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-light);
+    transition: all 0.3s;
+}
+
+.tab-btn:hover {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.tab-btn.active {
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Stock Dropdown Groups */
+.stock-dropdown-group {
+    margin-bottom: 12px;
+}
+
+.stock-dropdown-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: var(--font-size-base);
+}
+
+.stock-dropdown-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.stock-dropdown-group select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.stock-dropdown-group small {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.btn-small {
+    padding: 8px 12px;
+    width: 100%;
+    margin-top: 10px;
 }
 
 /* ============================================================
