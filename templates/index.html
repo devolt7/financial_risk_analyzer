@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Risk Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📊 Financial Risk Analyzer</h1>
+                <p class="subtitle">Advanced Statistical Analysis & Portfolio Optimization</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Panel: Input Controls -->
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h2>📈 Stock Selection</h2>
+                    
+                    <div class="form-group">
+                        <label for="stock-symbols">Stock Symbols</label>
+                        <textarea 
+                            id="stock-symbols" 
+                            placeholder="Enter symbols separated by commas&#10;Example: RELIANCE.NS, TCS.NS, INFY.NS"
+                            rows="4"
+                        ></textarea>
+                        <small>Use format like RELIANCE.NS for Indian stocks, AAPL for US stocks</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="investment-amount">Investment Amount ($)</label>
+                        <input type="number" id="investment-amount" value="100000" min="1000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="days-ahead">Days to Simulate</label>
+                        <input type="number" id="days-ahead" value="252" min="30" max="1000">
+                        <small>252 = 1 year of trading days</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="num-simulations">Monte Carlo Simulations</label>
+                        <input type="number" id="num-simulations" value="1000" min="100" max="5000">
+                        <small>More simulations = higher accuracy but slower</small>
+                    </div>
+
+                    <div class="actions">
+                        <button id="analyze-btn" class="btn btn-primary">
+                            🚀 Analyze Risk
+                        </button>
+                        <button id="validate-btn" class="btn btn-secondary">
+                            ✓ Validate Symbols
+                        </button>
+                    </div>
+
+                    <div id="status-message" class="status-message"></div>
+                </div>
+
+                <!-- Info Panel -->
+                <div class="panel-section info-panel">
+                    <h3>ℹ️ About This Tool</h3>
+                    <ul>
+                        <li><strong>Statistical Analysis:</strong> Mean, Variance, Standard Deviation</li>
+                        <li><strong>Risk Metrics:</strong> Value at Risk (VaR), Sharpe Ratio</li>
+                        <li><strong>Simulation:</strong> Monte Carlo price predictions</li>
+                        <li><strong>Optimization:</strong> Optimal portfolio allocation</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Right Panel: Results -->
+            <section class="results-panel">
+                <!-- Loading Indicator -->
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing financial data and running simulations...</p>
+                </div>
+
+                <!-- Results Container -->
+                <div id="results" class="results-container hidden">
+                    <!-- Stock Statistics Tab -->
+                    <div class="results-section">
+                        <h2>📊 Stock Statistics</h2>
+                        <div id="stock-stats-container" class="stats-grid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Risk Metrics Tab -->
+                    <div class="results-section">
+                        <h2>⚠️ Risk Metrics</h2>
+                        <div id="risk-metrics-container" class="metrics-grid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="results-section">
+                        <h2>📈 Visualizations</h2>
+                        
+                        <div class="chart-tabs">
+                            <button class="chart-tab-btn active" data-tab="price-chart">Price Trend</button>
+                            <button class="chart-tab-btn" data-tab="returns-chart">Return Distribution</button>
+                            <button class="chart-tab-btn" data-tab="mc-chart">Monte Carlo Simulation</button>
+                            <button class="chart-tab-btn" data-tab="efficient-frontier">Efficient Frontier</button>
+                        </div>
+
+                        <div id="price-chart" class="chart-container chart-tab-content active">
+                            <!-- Price chart will be rendered here -->
+                        </div>
+
+                        <div id="returns-chart" class="chart-container chart-tab-content">
+                            <!-- Returns histogram will be rendered here -->
+                        </div>
+
+                        <div id="mc-chart" class="chart-container chart-tab-content">
+                            <!-- Monte Carlo chart will be rendered here -->
+                        </div>
+
+                        <div id="efficient-frontier" class="chart-container chart-tab-content">
+                            <!-- Efficient frontier will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Optimization Tab -->
+                    <div class="results-section">
+                        <h2>💼 Portfolio Optimization</h2>
+                        
+                        <div class="optimization-tabs">
+                            <button class="opt-tab-btn active" data-tab="min-variance">Minimum Variance</button>
+                            <button class="opt-tab-btn" data-tab="sharpe">Max Sharpe Ratio</button>
+                            <button class="opt-tab-btn" data-tab="max-return">Maximum Return</button>
+                            <button class="opt-tab-btn" data-tab="equal">Equal Weight</button>
+                        </div>
+
+                        <div id="min-variance" class="optimization-tab-content opt-tab active">
+                            <!-- Min variance portfolio -->
+                        </div>
+
+                        <div id="sharpe" class="optimization-tab-content opt-tab">
+                            <!-- Sharpe portfolio -->
+                        </div>
+
+                        <div id="max-return" class="optimization-tab-content opt-tab">
+                            <!-- Max return portfolio -->
+                        </div>
+
+                        <div id="equal" class="optimization-tab-content opt-tab">
+                            <!-- Equal weight portfolio -->
+                        </div>
+                    </div>
+
+                    <!-- Summary Statistics -->
+                    <div class="results-section">
+                        <h2>📋 Analysis Summary</h2>
+                        <div id="summary-stats" class="summary-box">
+                            <!-- Summary will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state">
+                    <div class="empty-state-content">
+                        <h2>👋 Welcome to Financial Risk Analyzer</h2>
+                        <p>Enter stock symbols on the left and click "Analyze Risk" to get started.</p>
+                        <p class="empty-state-hint">Supported formats: RELIANCE.NS, TCS.NS, AAPL, MSFT, etc.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Financial Risk Analyzer | Powered by Python, Flask, and Statistical Methods</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

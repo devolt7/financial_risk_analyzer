@@ -1,0 +1,6 @@
+"""
+Chart Rendering Module - Server-side helper functions for generating chart data
+"""
+
+# This file would contain helper functions for complex data transformations
+# Most chart rendering happens client-side with Plotly.js for better performance
