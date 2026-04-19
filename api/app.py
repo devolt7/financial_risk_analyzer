@@ -63,6 +63,8 @@ app = Flask(__name__,
             template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'templates'),
             static_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static'))
 app.config['JSON_SORT_KEYS'] = False
+app.config['REQUEST_TIMEOUT'] = 60  # 60 second timeout for Vercel
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # Override Flask's JSON encoder to handle NaN values
 def configure_json_encoder():

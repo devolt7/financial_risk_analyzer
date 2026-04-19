@@ -193,7 +193,7 @@ async function analyzeRisk() {
         loadingEl.classList.remove('hidden');
         resultsEl.classList.add('hidden');
         emptyStateEl.classList.add('hidden');
-        showStatus('Starting analysis...', 'info', statusEl);
+        showStatus('Starting analysis... This may take 15-60 seconds depending on simulations.', 'info', statusEl);
         
         const response = await fetch('/api/analyze', {
             method: 'POST',
@@ -207,8 +207,14 @@ async function analyzeRisk() {
         });
         
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Analysis failed');
+            let errorMsg = 'Analysis failed';
+            try {
+                const error = await response.json();
+                errorMsg = error.error || errorMsg;
+            } catch (e) {
+                errorMsg = `Server error (status ${response.status})`;
+            }
+            throw new Error(errorMsg);
         }
         
         const data = await response.json();

@@ -55,6 +55,8 @@ from utils.portfolio_optimizer import PortfolioOptimizer
 # Initialize Flask app
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
+app.config['REQUEST_TIMEOUT'] = 60  # 60 second timeout for Vercel
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # Override Flask's JSON encoder to handle NaN values
 def configure_json_encoder():
@@ -110,7 +112,7 @@ def analyze():
         "symbols": ["RELIANCE.NS", "TCS.NS"],
         "investment_amount": 100000,
         "days_ahead": 252,
-        "num_simulations": 1000
+        "num_simulations": 500
     }
     
     Returns: Comprehensive analysis with all metrics and visualizations
@@ -118,22 +120,32 @@ def analyze():
     try:
         # Get input data
         data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'Invalid request body'}), 400
+            
         symbols_str = data.get('symbols', '').strip()
         investment_amount = float(data.get('investment_amount', 100000))
         days_ahead = int(data.get('days_ahead', 252))
-        num_simulations = int(data.get('num_simulations', 1000))
+        num_simulations = int(data.get('num_simulations', 500))  # Reduced from 1000 for speed
+        
+        # Cap simulations for performance
+        if num_simulations > 2000:
+            num_simulations = 2000
+        if num_simulations < 100:
+            num_simulations = 100
         
         # Parse and validate symbols
         symbols = [s.strip().upper() for s in symbols_str.split(',') if s.strip()]
         
         if not symbols:
-            return jsonify({'error': 'Please provide at least one stock symbol'}), 400
+            return jsonify({'success': False, 'error': 'Please provide at least one stock symbol'}), 400
         
         if len(symbols) > 10:
-            return jsonify({'error': 'Maximum 10 stocks allowed for analysis'}), 400
+            return jsonify({'success': False, 'error': 'Maximum 10 stocks allowed for analysis'}), 400
         
         print(f"\n{'='*60}")
         print(f"Starting analysis for: {symbols}")
+        print(f"Simulations: {num_simulations}, Days: {days_ahead}")
         print(f"{'='*60}\n")
         
         # Step 1: Validate symbols and fetch data
@@ -141,7 +153,7 @@ def analyze():
         stock_data = data_handler.fetch_stock_data(symbols)
         
         if not stock_data:
-            return jsonify({'error': 'Could not fetch data for any symbols'}), 400
+            return jsonify({'success': False, 'error': 'Could not fetch data for any symbols'}), 400
         
         valid_symbols = list(stock_data.keys())
         
@@ -279,13 +291,17 @@ def analyze():
     except Exception as e:
         print(f"\n❌ Error during analysis: {str(e)}")
         print(traceback.format_exc())
-        error_response = {
-            'success': False,
-            'error': str(e),
-            'traceback': traceback.format_exc()
-        }
-        clean_error = convert_to_json_serializable(error_response)
-        return _original_jsonify(clean_error), 500
+        # Always return JSON, even on error
+        try:
+            error_response = {
+                'success': False,
+                'error': str(e),
+                'traceback': traceback.format_exc() if app.debug else None
+            }
+            return jsonify(error_response), 500
+        except:
+            # Ultimate fallback - return minimal JSON
+            return jsonify({'success': False, 'error': 'Internal server error'}), 500
 
 
 @app.route('/api/get-stock-list', methods=['GET'])
