@@ -78,7 +78,7 @@ class PortfolioOptimizer:
         """
         def portfolio_variance(weights):
             """Calculate portfolio variance"""
-            return np.dot(weights, np.dot(self.covariance_matrix, weights))
+            return float(np.dot(weights, np.dot(self.covariance_matrix, weights)))
         
         # Initial guess: equal weights
         x0 = np.array([1.0 / self.num_assets] * self.num_assets)
@@ -121,11 +121,11 @@ class PortfolioOptimizer:
         """
         def negative_return(weights):
             """We minimize negative return (= maximize positive return)"""
-            return -np.dot(weights, self.expected_returns)
+            return -float(np.dot(weights, self.expected_returns))
         
         def portfolio_volatility(weights):
             """Calculate portfolio volatility (std dev)"""
-            return np.sqrt(np.dot(weights, np.dot(self.covariance_matrix, weights)))
+            return float(np.sqrt(np.dot(weights, np.dot(self.covariance_matrix, weights))))
         
         # Initial guess: equal weights
         x0 = np.array([1.0 / self.num_assets] * self.num_assets)
@@ -173,8 +173,8 @@ class PortfolioOptimizer:
         """
         def negative_sharpe_ratio(weights):
             """Minimize negative Sharpe ratio (= maximize Sharpe ratio)"""
-            p_return = np.dot(weights, self.expected_returns)
-            p_volatility = np.sqrt(np.dot(weights, np.dot(self.covariance_matrix, weights)))
+            p_return = float(np.dot(weights, self.expected_returns))
+            p_volatility = float(np.sqrt(np.dot(weights, np.dot(self.covariance_matrix, weights))))
             
             if p_volatility == 0:
                 return float('inf')
