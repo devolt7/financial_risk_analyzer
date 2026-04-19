@@ -173,29 +173,29 @@ function displayStockStatistics(data) {
             <h3>${symbol}</h3>
             <div class="stat-row">
                 <span class="stat-label">Current Price:</span>
-                <span class="stat-value">$${stats.current_price.toFixed(2)}</span>
+                <span class="stat-value">$${(stats.current_price ?? 0).toFixed(2)}</span>
             </div>
             <div class="stat-row">
                 <span class="stat-label">Annual Return:</span>
-                <span class="stat-value ${basicStats.expected_annual_return > 0 ? 'positive' : 'negative'}">
-                    ${(basicStats.expected_annual_return * 100).toFixed(2)}%
+                <span class="stat-value ${(basicStats.expected_annual_return ?? 0) > 0 ? 'positive' : 'negative'}">
+                    ${((basicStats.expected_annual_return ?? 0) * 100).toFixed(2)}%
                 </span>
             </div>
             <div class="stat-row">
                 <span class="stat-label">Annual Volatility:</span>
-                <span class="stat-value warning">${(basicStats.annual_volatility * 100).toFixed(2)}%</span>
+                <span class="stat-value warning">${((basicStats.annual_volatility ?? 0) * 100).toFixed(2)}%</span>
             </div>
             <div class="stat-row">
                 <span class="stat-label">Sharpe Ratio:</span>
-                <span class="stat-value">${stats.risk_metrics.sharpe_ratio.toFixed(3)}</span>
+                <span class="stat-value">${(stats.risk_metrics.sharpe_ratio ?? 0).toFixed(3)}</span>
             </div>
             <div class="stat-row">
                 <span class="stat-label">Skewness:</span>
-                <span class="stat-value">${basicStats.skewness.toFixed(3)}</span>
+                <span class="stat-value">${(basicStats.skewness ?? 0).toFixed(3)}</span>
             </div>
             <div class="stat-row">
                 <span class="stat-label">Kurtosis:</span>
-                <span class="stat-value">${basicStats.kurtosis.toFixed(3)}</span>
+                <span class="stat-value">${(basicStats.kurtosis ?? 0).toFixed(3)}</span>
             </div>
         `;
         
@@ -223,8 +223,8 @@ function displayRiskMetrics(data) {
             <div class="metric-value">${metrics.risk_level}</div>
             <div class="metric-description">${metrics.risk_description}</div>
             <div style="margin-top: 15px; font-size: 12px; opacity: 0.9;">
-                <div>VaR (95%): ${(metrics.var_annual * 100).toFixed(2)}%</div>
-                <div>CVaR (Daily): ${(metrics.cvar_daily * 100).toFixed(2)}%</div>
+                <div>VaR (95%): ${((metrics.var_annual ?? 0) * 100).toFixed(2)}%</div>
+                <div>CVaR (Daily): ${((metrics.cvar_daily ?? 0) * 100).toFixed(2)}%</div>
             </div>
         `;
         
@@ -256,15 +256,15 @@ function renderPortfolioAllocation(strategy) {
         <div class="portfolio-stats">
             <div class="portfolio-stat">
                 <h4>Expected Return</h4>
-                <div class="value">${strategy.expected_return_percentage.toFixed(2)}%</div>
+                <div class="value">${(strategy.expected_return_percentage ?? 0).toFixed(2)}%</div>
             </div>
             <div class="portfolio-stat">
                 <h4>Annual Volatility</h4>
-                <div class="value">${strategy.portfolio_volatility_percentage.toFixed(2)}%</div>
+                <div class="value">${(strategy.portfolio_volatility_percentage ?? 0).toFixed(2)}%</div>
             </div>
             <div class="portfolio-stat">
                 <h4>Sharpe Ratio</h4>
-                <div class="value">${strategy.sharpe_ratio.toFixed(3)}</div>
+                <div class="value">${(strategy.sharpe_ratio ?? 0).toFixed(3)}</div>
             </div>
         </div>
         
@@ -281,7 +281,7 @@ function renderPortfolioAllocation(strategy) {
     `;
     
     Object.entries(strategy.allocation).forEach(([symbol, alloc]) => {
-        const percentage = alloc.weight_percentage;
+        const percentage = alloc.weight_percentage ?? 0;
         html += `
             <tr>
                 <td><strong>${symbol}</strong></td>
@@ -328,7 +328,7 @@ function displaySummary(data) {
     avgVolatility /= numStocks;
     avgSharpe /= numStocks;
     
-    const maxStrategy = data.portfolio_optimization.strategies['Max Sharpe Ratio'];
+    const maxStrategy = data.portfolio_optimization?.strategies?.['Max Sharpe Ratio'];
     
     container.innerHTML = `
         <div class="summary-item">
@@ -345,24 +345,24 @@ function displaySummary(data) {
         </div>
         <div class="summary-item">
             <strong>Avg Annual Return</strong>
-            <span>${(avgReturn * 100).toFixed(2)}%</span>
+            <span>${((avgReturn ?? 0) * 100).toFixed(2)}%</span>
         </div>
         <div class="summary-item">
             <strong>Avg Annual Volatility</strong>
-            <span>${(avgVolatility * 100).toFixed(2)}%</span>
+            <span>${((avgVolatility ?? 0) * 100).toFixed(2)}%</span>
         </div>
         <div class="summary-item">
             <strong>Avg Sharpe Ratio</strong>
-            <span>${avgSharpe.toFixed(3)}</span>
+            <span>${(avgSharpe ?? 0).toFixed(3)}</span>
         </div>
-        <div class="summary-item">
+        ${maxStrategy ? `<div class="summary-item">
             <strong>Optimal Strategy Return</strong>
-            <span>${maxStrategy.expected_return_percentage.toFixed(2)}%</span>
+            <span>${(maxStrategy.expected_return_percentage ?? 0).toFixed(2)}%</span>
         </div>
         <div class="summary-item">
             <strong>Optimal Strategy Risk</strong>
-            <span>${maxStrategy.portfolio_volatility_percentage.toFixed(2)}%</span>
-        </div>
+            <span>${(maxStrategy.portfolio_volatility_percentage ?? 0).toFixed(2)}%</span>
+        </div>` : ''}
     `;
 }
 

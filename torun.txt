@@ -1,0 +1,15 @@
+sudo apt update
+sudo apt install -y build-essential gcc gfortran libopenblas-dev liblapack-dev libxml2-dev libxslt1-dev libffi-dev
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt
+
+python app.py
+
+
+If you already have venv:
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
