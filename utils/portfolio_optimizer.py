@@ -61,7 +61,8 @@ class PortfolioOptimizer:
         cov_matrix = cov_matrix.fillna(0)
         cov_matrix = cov_matrix.replace([np.inf, -np.inf], 0)
         
-        self.covariance_matrix = cov_matrix
+        # Convert to numpy array to avoid Series ambiguity errors in optimization
+        self.covariance_matrix = cov_matrix.values
     
     def optimize_risk_minimization(self):
         """
